@@ -1,0 +1,57 @@
+{
+    "folders": [
+        {
+            "name": "Project",
+            "path": "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator"
+        }
+    ],
+    "settings": {
+        "python.autoComplete.extraPaths": [
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Library"
+        ],
+        "python.analysis.extraPaths": [
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Library"
+        ],
+        "files.autoSave": "afterDelay",
+        "files.exclude": {
+            "**.vscode": true,
+            "**.idea": true,
+            "config.json": true,
+            "qc.code-workspace": true,
+            "bin": true,
+            "obj": true,
+            "backtests": true,
+            "live": true,
+            "optimizations": true,
+            "storage": true,
+            "report": true,
+            "__pycache__": true,
+            ".ipynb_checkpoints": true,
+            ".idea": true,
+            ".vscode": true
+        },
+        "files.watcherExclude": {
+            "bin/**": true,
+            "obj/**": true,
+            "backtests/**": true,
+            "live/**": true,
+            "optimizations/**": true,
+            "storage/**": true,
+            "report/**": true,
+            "__pycache__/**": true,
+            ".ipynb_checkpoints/**": true,
+            ".idea/**": true,
+            ".vscode/**": true
+        },
+        "files.readonlyInclude": {
+            "**/.lake/**/*.lean": true,
+            "**/.elan/**/*.lean": true,
+            "**/*.py": false,
+            "**/*.cs": false,
+            "**/*.ipynb": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.py": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.cs": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.ipynb": false
+        }
+    }
+}

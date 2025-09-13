@@ -1,0 +1,59 @@
+# macOS
+.DS_Store
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+
+# Virtual environments
+.env
+.env.*
+.venv
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs, caches, coverage
+*.log
+logs/
+tmp/
+temp/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+site/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+
+# Data and generated outputs
+data/
+datasets/
+output/
+results/
+backtests/
+
+# QuantConnect/LEAN (local usage)
+storage/
+*.qcresult
+
