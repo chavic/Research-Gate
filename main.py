@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # endregion
 
 class SleepySkyBlueAlligator(QCAlgorithm):
-    """
+     """
     BTC Trading System with Kraken Integration
     - Random buy/sell decisions with deterministic seed
     - 3% Stop Loss Risk Management (best performing strategy from risk analysis)
@@ -56,10 +56,6 @@ class SleepySkyBlueAlligator(QCAlgorithm):
             self.check_risk_management
         )
         
-        self.log(f"🚀 BTC Trading System Initialized")
-        self.log(f"📊 Risk Management: {self.stop_loss_pct*100}% Stop Loss")
-        self.log(f"💰 Starting Capital: ${self.cash:,.2f}")
-        self.log(f"🎲 Deterministic Seed: {self.deterministic_seed}")
 
     def on_data(self, data: Slice):
         """Main data processing and trading logic"""
@@ -123,7 +119,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         self.total_fees_paid += fee_paid
         
         self.trade_count += 1
-        self.log(f"🟢 LONG Entry #{self.trade_count}: ${price:,.2f} | Stop: ${self.stop_loss_price:,.2f} | Fee: ${fee_paid:.2f}")
+        self.log(f"LONG Entry #{self.trade_count}: ${price:,.2f} | Stop: ${self.stop_loss_price:,.2f} | Fee: ${fee_paid:.2f}")
 
     def enter_short_position(self, price: float, timestamp: datetime):
         """Enter short position with risk management"""
@@ -149,7 +145,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         self.total_fees_paid += fee_paid
         
         self.trade_count += 1
-        self.log(f"🔴 SHORT Entry #{self.trade_count}: ${price:,.2f} | Stop: ${self.stop_loss_price:,.2f} | Fee: ${fee_paid:.2f}")
+        self.log(f"SHORT Entry #{self.trade_count}: ${price:,.2f} | Stop: ${self.stop_loss_price:,.2f} | Fee: ${fee_paid:.2f}")
 
     def check_risk_management(self):
         """Check stop loss and other risk management rules"""
@@ -191,7 +187,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         
         # Log trade result
         win_rate = (self.winning_trades / self.trade_count) * 100 if self.trade_count > 0 else 0
-        self.log(f"🚪 EXIT #{self.trade_count}: {reason} | P&L: {pnl_pct*100:+.2f}% | Win Rate: {win_rate:.1f}% | Total Fees: ${self.total_fees_paid:.2f}")
+        self.log(f"EXIT #{self.trade_count}: {reason} | P&L: {pnl_pct*100:+.2f}% | Win Rate: {win_rate:.1f}% | Total Fees: ${self.total_fees_paid:.2f}")
         
         # Reset position tracking
         self.position_side = None
@@ -202,15 +198,4 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         """Final performance summary"""
         total_return = (self.portfolio.total_portfolio_value - 100000) / 100000 * 100
         win_rate = (self.winning_trades / self.trade_count) * 100 if self.trade_count > 0 else 0
-        
-        self.log("=" * 60)
-        self.log("📊 FINAL PERFORMANCE SUMMARY")
-        self.log("=" * 60)
-        self.log(f"💰 Final Portfolio Value: ${self.portfolio.total_portfolio_value:,.2f}")
-        self.log(f"📈 Total Return: {total_return:+.2f}%")
-        self.log(f"🎯 Total Trades: {self.trade_count}")
-        self.log(f"🏆 Winning Trades: {self.winning_trades}")
-        self.log(f"📊 Win Rate: {win_rate:.1f}%")
-        self.log(f"💸 Total Fees Paid: ${self.total_fees_paid:.2f}")
-        self.log(f"🎲 Deterministic Seed Used: {self.deterministic_seed}")
-        self.log("=" * 60)
+ 
