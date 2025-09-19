@@ -14,7 +14,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
 
         self.btc_symbol = self.AddCrypto("BTCUSD", Resolution.Minute, Market.Kraken).Symbol
 
-        random.seed(42)
+        self.random_state = random.Random(42)
 
         self.stop_loss_pct = 0.03
         self.entry_price = 0.0
@@ -45,7 +45,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         if current_time - self.last_trade_time < self.min_trade_interval:
             return
 
-        if random.random() < 0.3:
+        if self.random_state.random() < 0.3:
             self._enter_long_position(current_price, current_time)
 
     def _enter_long_position(self, price: float, timestamp: datetime) -> None:
