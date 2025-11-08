@@ -13,5 +13,6 @@
     },
     "description": "BTC Trading System with Kraken Integration - Random Strategy with 3% Stop Loss Risk Management",
     "organization-id": "f17896f25bb0e662075cc6b8a6c2b7a1",
-    "python-venv": 1
+    "python-venv": 1,
+    "deployment-target": "Cloud Platform"
 }

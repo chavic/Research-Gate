@@ -2,7 +2,7 @@
     "folders": [
         {
             "name": "Project",
-            "path": "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator"
+            "path": "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Research Gate"
         }
     ],
     "settings": {
@@ -51,7 +51,10 @@
             "**/*.ipynb": false,
             "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.py": false,
             "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.cs": false,
-            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.ipynb": false
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Sleepy Sky Blue Alligator/**/*.ipynb": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Research Gate/**/*.py": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Research Gate/**/*.cs": false,
+            "/Users/macbook/Workspace/Wealth Labs/Lean Projects/Research Gate/**/*.ipynb": false
         }
     }
 }

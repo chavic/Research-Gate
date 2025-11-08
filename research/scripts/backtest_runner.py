@@ -1,3 +1,6 @@
+# region imports
+from AlgorithmImports import *
+# endregion
 """
 Lean/QuantConnect backtest runner scaffold.
 

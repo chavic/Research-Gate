@@ -10,6 +10,7 @@ from research.scripts.signals import SignalModel
 from research.scripts.portfolio import FixedFractionAllocator
 from research.scripts.risk import RiskGuard
 from research.scripts.execution import ImmediatePlanner, ChildOrder
+from research.scripts.costs import TieredCryptoFeeModel
 
 
 @dataclass
@@ -19,15 +20,31 @@ class PositionState:
     side: str | None = None
 
 
-class KrakenMinuteAdapter:
-    """Thin wrapper capturing the data request spec we use for BTCUSD."""
+class SpotMinuteAdapter:
+    """Captures the data request spec for a spot crypto venue (Kraken/Binance)."""
 
-    def __init__(self, algorithm: QCAlgorithm, start: datetime, end: datetime) -> None:
+    MARKET_MAP = {
+        "kraken": Market.Kraken,
+        "binance": Market.Binance,
+    }
+
+    def __init__(
+        self,
+        algorithm: QCAlgorithm,
+        venue: str,
+        symbol: str,
+        start: datetime,
+        end: datetime,
+    ) -> None:
+        if venue not in self.MARKET_MAP:
+            raise ValueError(f"Unsupported venue for adapter: {venue}")
+
         self.algorithm = algorithm
+        self.venue = venue
         self.loader = DataLoader()
         self.spec = DataRequestSpec(
-            symbol="BTCUSD",
-            market=Market.Kraken,
+            symbol=symbol,
+            market=self.MARKET_MAP[venue],
             security_type="Crypto",
             resolution="Minute",
             start=start.strftime("%Y-%m-%d"),
@@ -35,7 +52,7 @@ class KrakenMinuteAdapter:
             fill_forward=True,
             normalization_mode="Raw",
             extended_hours=False,
-            additional_params={"comment": "default research adapter"},
+            additional_params={"comment": f"spot minute adapter ({venue})"},
         )
 
     def subscribe(self) -> Symbol:
@@ -118,13 +135,35 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         self.SetEndDate(2024, 12, 31)
         self.SetCash(100000)
 
+        self.venue = (self.GetParameter("exchange_venue") or "kraken").lower()
+        brokerage_map = {
+            "kraken": BrokerageName.Kraken,
+            "binance": BrokerageName.Binance,
+        }
+        if self.venue not in brokerage_map:
+            raise ValueError(f"Unsupported venue: {self.venue}")
+
+        self.SetBrokerageModel(brokerage_map[self.venue], AccountType.Cash)
+
         self.position_state = PositionState()
         self.stop_loss_pct = 0.03
         self.min_trade_interval = timedelta(minutes=5)
         self.last_trade_time = self.StartDate
 
-        self.market_adapter = KrakenMinuteAdapter(self, self.StartDate, self.EndDate)
+        ticker = "BTCUSD" if self.venue == "kraken" else "BTCUSDT"
+        self.market_adapter = SpotMinuteAdapter(
+            self,
+            self.venue,
+            ticker,
+            self.StartDate,
+            self.EndDate,
+        )
         self.btc_symbol = self.market_adapter.subscribe()
+        self.Securities[self.btc_symbol].FeeModel = TieredCryptoFeeModel(
+            venue=self.venue,
+            trailing_30d_volume=0,
+            assume_maker=False,
+        )
 
         self.feature_engine = SimpleFeatureEngine()
         self.signal_model = RandomLongSignal(probability=0.3, seed=42)
