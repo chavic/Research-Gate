@@ -135,37 +135,47 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         self.SetEndDate(2024, 12, 31)
         self.SetCash(100000)
 
+        self.asset_class = (self.GetParameter("asset_class") or "crypto").lower()
         self.venue = (self.GetParameter("exchange_venue") or "kraken").lower()
+
         brokerage_map = {
             "kraken": BrokerageName.Kraken,
             "binance": BrokerageName.Binance,
+            "usa": BrokerageName.InteractiveBrokersBrokerage,  # default for equities
         }
-        if self.venue not in brokerage_map:
-            raise ValueError(f"Unsupported venue: {self.venue}")
+        brokerage_key = self.venue if self.asset_class == "crypto" else "usa"
+        if brokerage_key not in brokerage_map:
+            raise ValueError(f"Unsupported venue/brokerage combination: {brokerage_key}")
 
-        self.SetBrokerageModel(brokerage_map[self.venue], AccountType.Cash)
+        self.SetBrokerageModel(brokerage_map[brokerage_key], AccountType.Cash)
 
         self.position_state = PositionState()
         self.stop_loss_pct = 0.03
         self.min_trade_interval = timedelta(minutes=5)
         self.last_trade_time = self.StartDate
 
-        ticker = "BTCUSD" if self.venue == "kraken" else "BTCUSDT"
-        self.market_adapter = SpotMinuteAdapter(
-            self,
-            self.venue,
-            ticker,
-            self.StartDate,
-            self.EndDate,
-        )
-        self.btc_symbol = self.market_adapter.subscribe()
-        self.Securities[self.btc_symbol].SetFeeModel(
-            TieredCryptoFeeModel(
-                venue=self.venue,
-                trailing_30d_volume=0,
-                assume_maker=False,
+        if self.asset_class == "crypto":
+            ticker = self.GetParameter("symbol") or ("BTCUSD" if self.venue == "kraken" else "BTCUSDT")
+            self.market_adapter = SpotMinuteAdapter(
+                self,
+                self.venue,
+                ticker,
+                self.StartDate,
+                self.EndDate,
             )
-        )
+            self.asset_symbol = self.market_adapter.subscribe()
+            self.Securities[self.asset_symbol].SetFeeModel(
+                TieredCryptoFeeModel(
+                    venue=self.venue,
+                    trailing_30d_volume=0,
+                    assume_maker=False,
+                )
+            )
+        elif self.asset_class == "equity":
+            ticker = self.GetParameter("symbol") or "SPY"
+            self.asset_symbol = self.AddEquity(ticker, Resolution.Minute, Market.USA).Symbol
+        else:
+            raise ValueError(f"Unsupported asset_class: {self.asset_class}")
 
         self.feature_engine = SimpleFeatureEngine()
         self.signal_model = RandomLongSignal(probability=0.3, seed=42)
@@ -180,10 +190,10 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         if self.IsWarmingUp:
             return
 
-        if self.btc_symbol not in data or data[self.btc_symbol] is None:
+        if self.asset_symbol not in data or data[self.asset_symbol] is None:
             return
 
-        bar = data[self.btc_symbol]
+        bar = data[self.asset_symbol]
         price = float(bar.Close)
 
         self.risk_guard.update_trailing(price)
@@ -203,7 +213,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         if score <= 0:
             return
 
-        scores = {str(self.btc_symbol): score}
+        scores = {str(self.asset_symbol): score}
         context = {"price": price}
         allocation = self.allocator.compute(scores, context)
         safe_targets = self.risk_guard.evaluate(allocation.weights, context)
@@ -221,7 +231,7 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         if pnl_pct > 0:
             self.winning_trades += 1
 
-        self.Liquidate(self.btc_symbol, reason)
+        self.Liquidate(self.asset_symbol, reason)
 
         self.risk_guard.reset()
 
@@ -233,13 +243,13 @@ class SleepySkyBlueAlligator(QCAlgorithm):
 
     def _route_orders(self, orders: list[ChildOrder], price: float) -> None:
         for order in orders:
-            if order.symbol != str(self.btc_symbol):
+            if order.symbol != str(self.asset_symbol):
                 continue
 
             if self.Portfolio.Cash <= 0:
                 return
 
-            self.SetHoldings(self.btc_symbol, order.quantity)
+            self.SetHoldings(self.asset_symbol, order.quantity)
             self.risk_guard.register_entry(price)
             self.last_trade_time = self.Time
             self.trade_count += 1

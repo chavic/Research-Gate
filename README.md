@@ -23,14 +23,24 @@ Data → Features → Signal → Portfolio/Size → Risk Filters → Execution �
 ## Quick Start
 
 1. **Install Lean CLI** and authenticate with QuantConnect Cloud.
-2. **Run a backtest** (local or cloud):
+2. **Run a backtest** (local or cloud). Examples:
 
    ```bash
-   # From the repo root
+   # Baseline crypto (Kraken BTCUSD)
    lean cloud backtest "Research Gate"
+
+   # Binance BTCUSDT
+   lean cloud backtest "Research Gate" \
+     --parameter exchange_venue binance \
+     --parameter symbol BTCUSDT
+
+   # Equity (SPY via Interactive Brokers model)
+   lean cloud backtest "Research Gate" \
+     --parameter asset_class equity \
+     --parameter symbol SPY
    ```
 
-   Use project name from `config.json`. Pass `--parameter exchange_venue=binance` etc. to test other venues.
+   Parameters map directly to `main.py`: `asset_class=crypto|equity`, `exchange_venue=kraken|binance|...`, `symbol=BTCUSD|SPY|...`.
 3. **Inspect outputs**: Lean CLI prints the backtest URL and summary stats. Logs, charts, and JSON live under `./backtests/` (local) or on QuantConnect.
 
 ## Research Workflow
