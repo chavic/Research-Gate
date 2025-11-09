@@ -141,13 +141,26 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         brokerage_map = {
             "kraken": BrokerageName.Kraken,
             "binance": BrokerageName.Binance,
-            "usa": BrokerageName.InteractiveBrokersBrokerage,  # default for equities
+            "usa": BrokerageName.InteractiveBrokersBrokerage,  # equities default
+            "oanda": BrokerageName.OandaBrokerage,
+            "fxcm": BrokerageName.FxcmBrokerage,
         }
-        brokerage_key = self.venue if self.asset_class == "crypto" else "usa"
+        if self.asset_class == "crypto":
+            brokerage_key = self.venue
+        elif self.asset_class == "equity":
+            brokerage_key = "usa"
+        elif self.asset_class == "fx":
+            brokerage_key = self.venue
+        else:
+            brokerage_key = None
         if brokerage_key not in brokerage_map:
             raise ValueError(f"Unsupported venue/brokerage combination: {brokerage_key}")
 
-        self.SetBrokerageModel(brokerage_map[brokerage_key], AccountType.Cash)
+        account_type = AccountType.Cash
+        if brokerage_key in {"oanda", "fxcm"}:
+            account_type = AccountType.Margin
+
+        self.SetBrokerageModel(brokerage_map[brokerage_key], account_type)
 
         self.position_state = PositionState()
         self.stop_loss_pct = 0.03
@@ -174,6 +187,10 @@ class SleepySkyBlueAlligator(QCAlgorithm):
         elif self.asset_class == "equity":
             ticker = self.GetParameter("symbol") or "SPY"
             self.asset_symbol = self.AddEquity(ticker, Resolution.Minute, Market.USA).Symbol
+        elif self.asset_class == "fx":
+            ticker = self.GetParameter("symbol") or "EURUSD"
+            fx_market = Market.Oanda if self.venue == "oanda" else Market.FXCM
+            self.asset_symbol = self.AddForex(ticker, Resolution.Minute, fx_market).Symbol
         else:
             raise ValueError(f"Unsupported asset_class: {self.asset_class}")
 
