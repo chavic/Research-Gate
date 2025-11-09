@@ -159,10 +159,12 @@ class SleepySkyBlueAlligator(QCAlgorithm):
             self.EndDate,
         )
         self.btc_symbol = self.market_adapter.subscribe()
-        self.Securities[self.btc_symbol].FeeModel = TieredCryptoFeeModel(
-            venue=self.venue,
-            trailing_30d_volume=0,
-            assume_maker=False,
+        self.Securities[self.btc_symbol].SetFeeModel(
+            TieredCryptoFeeModel(
+                venue=self.venue,
+                trailing_30d_volume=0,
+                assume_maker=False,
+            )
         )
 
         self.feature_engine = SimpleFeatureEngine()
