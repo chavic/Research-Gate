@@ -11,7 +11,7 @@ from research.scripts.portfolio import FixedFractionAllocator
 from research.scripts.risk import RiskGuard
 from research.scripts.execution import ImmediatePlanner, ChildOrder
 from research.scripts.costs import TieredCryptoFeeModel
-
+# endregion
 
 @dataclass
 class PositionState:
@@ -125,7 +125,7 @@ class TrailingStopGuard(RiskGuard):
         if price is not None:
             self.update_trailing(price)
         return super().evaluate(targets, context)
-# endregion
+
 
 class SleepySkyBlueAlligator(QCAlgorithm):
     """Randomised long-only BTC strategy with a trailing stop mechanism."""
