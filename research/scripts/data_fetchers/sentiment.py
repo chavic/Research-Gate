@@ -83,7 +83,3 @@ def run_pipeline(
 
     return output_files
 
-
-
-
-

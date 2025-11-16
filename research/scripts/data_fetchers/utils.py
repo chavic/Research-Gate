@@ -109,7 +109,3 @@ def chunked(iterable: Iterable[Any], size: int) -> Iterable[list[Any]]:
     if chunk:
         yield chunk
 
-
-
-
-

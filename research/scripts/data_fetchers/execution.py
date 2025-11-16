@@ -154,7 +154,3 @@ def run_pipeline(
     utils.write_time_series(metrics, out_file)
     return out_file
 
-
-
-
-
