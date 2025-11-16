@@ -56,6 +56,32 @@ def liquidity_metrics(price: pd.Series, volume: pd.Series, lookback: int = 10) -
     return score.rename(f"liquidity_score_{lookback}")
 
 
+def relative_volume(volume: pd.Series, short_window: int = 24, long_window: int = 168) -> pd.Series:
+    short_avg = volume.rolling(short_window).mean()
+    long_avg = volume.rolling(long_window).mean()
+    ratio = short_avg / long_avg.replace(0, np.nan)
+    return ratio.rename(f"relative_volume_{short_window}_{long_window}")
+
+
+def volume_percentile(volume: pd.Series, window: int = 168) -> pd.Series:
+    def percentile(arr: np.ndarray) -> float:
+        arr = arr[~np.isnan(arr)]
+        if arr.size == 0:
+            return np.nan
+        last = arr[-1]
+        return np.sum(arr <= last) / arr.size
+
+    scores = volume.rolling(window).apply(lambda x: percentile(np.array(x)), raw=True)
+    return scores.rename(f"volume_percentile_{window}")
+
+
+def price_volume_ratio(price: pd.Series, volume: pd.Series, window: int = 24) -> pd.Series:
+    price_change = price.pct_change(window)
+    volume_change = volume.pct_change(window)
+    ratio = price_change / volume_change.replace(0, np.nan)
+    return ratio.rename(f"price_volume_ratio_{window}")
+
+
 def cross_asset_beta(
     target_returns: pd.Series,
     factor_returns: Mapping[str, pd.Series],
@@ -100,6 +126,9 @@ __all__ = [
     "realized_vol",
     "normalized_momentum",
     "liquidity_metrics",
+    "relative_volume",
+    "volume_percentile",
+    "price_volume_ratio",
     "cross_asset_beta",
     "regime_flags",
 ]
